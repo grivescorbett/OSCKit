@@ -328,13 +328,24 @@ uint32 ReceivedMessageArgument::AsMidiMessage() const
 	else
 		throw WrongArgumentTypeException();
 }
-
-
+    
 uint32 ReceivedMessageArgument::AsMidiMessageUnchecked() const
 {
-	return ToUInt32( argumentPtr_ );
+    return ToUInt32( argumentPtr_ );
 }
-
+    
+uint32 ReceivedMessageArgument::AsControlPointAddress() const {
+    if( !typeTagPtr_ )
+        throw MissingArgumentException();
+    else if( *typeTagPtr_ == CONTROL_POINT_ADDRESS_TYPE_TAG )
+        return AsControlPointAddressUnchecked();
+    else
+        throw WrongArgumentTypeException();
+}
+    
+uint32 ReceivedMessageArgument::AsControlPointAddressUnchecked() const {
+    return ToUInt32( argumentPtr_ );
+}
 
 int64 ReceivedMessageArgument::AsInt64() const
 {
@@ -504,7 +515,8 @@ void ReceivedMessageArgumentIterator::Advance()
             break;
 
         case INT32_TYPE_TAG:
-        case FLOAT_TYPE_TAG: 					
+        case CONTROL_POINT_ADDRESS_TYPE_TAG:
+        case FLOAT_TYPE_TAG:
         case CHAR_TYPE_TAG:
         case RGBA_COLOR_TYPE_TAG:
         case MIDI_MESSAGE_TYPE_TAG:
@@ -654,6 +666,7 @@ void ReceivedMessage::Init( const char *message, osc_bundle_element_size_t size 
                         break;
 
                     case INT32_TYPE_TAG:
+                    case CONTROL_POINT_ADDRESS_TYPE_TAG:
                     case FLOAT_TYPE_TAG:
                     case CHAR_TYPE_TAG:
                     case RGBA_COLOR_TYPE_TAG:

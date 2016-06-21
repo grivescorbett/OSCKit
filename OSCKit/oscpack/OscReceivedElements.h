@@ -247,6 +247,10 @@ public:
     bool IsMidiMessage() const { return *typeTagPtr_ == MIDI_MESSAGE_TYPE_TAG; }
     uint32 AsMidiMessage() const;
     uint32 AsMidiMessageUnchecked() const;
+    
+    bool IsControlPointAddress() const { return *typeTagPtr_ == CONTROL_POINT_ADDRESS_TYPE_TAG; }
+    uint32 AsControlPointAddress() const;
+    uint32 AsControlPointAddressUnchecked() const;
 
     bool IsInt64() const { return *typeTagPtr_ == INT64_TYPE_TAG; }
     int64 AsInt64() const;
