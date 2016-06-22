@@ -108,7 +108,7 @@
         float x = *(float*)(&x_host);
         float y = *(float*)(&y_host);
         
-        [arguments addObject:[NSValue valueWithCGPoint:CGPointMake(x, y)]];
+        [arguments addObject:@[@(x), @(y)]];
     } else {
         NSLog(@"%@", arg->TypeTag());
       [[NSException exceptionWithName:@"OSCProtocolException"
