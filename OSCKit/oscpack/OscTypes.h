@@ -117,6 +117,7 @@ enum TypeTagValues {
     INFINITUM_TYPE_TAG = 'I',
     INT32_TYPE_TAG = 'i',
     CONTROL_POINT_ADDRESS_TYPE_TAG = 'A',
+    POINT_TYPE_TAG = 'P',
     FLOAT_TYPE_TAG = 'f',
     CHAR_TYPE_TAG = 'c',
     RGBA_COLOR_TYPE_TAG = 'r',

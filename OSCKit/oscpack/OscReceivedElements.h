@@ -228,6 +228,8 @@ public:
     bool IsNil() const { return *typeTagPtr_ == NIL_TYPE_TAG; }
     bool IsInfinitum() const { return *typeTagPtr_ == INFINITUM_TYPE_TAG; }
 
+    uint16_t AsUInt12Unchecked() const;
+    
     bool IsInt32() const { return *typeTagPtr_ == INT32_TYPE_TAG; }
     int32 AsInt32() const;
     int32 AsInt32Unchecked() const;
@@ -249,8 +251,7 @@ public:
     uint32 AsMidiMessageUnchecked() const;
     
     bool IsControlPointAddress() const { return *typeTagPtr_ == CONTROL_POINT_ADDRESS_TYPE_TAG; }
-    uint32 AsControlPointAddress() const;
-    uint32 AsControlPointAddressUnchecked() const;
+    bool IsPoint() const { return *typeTagPtr_ == POINT_TYPE_TAG; }
 
     bool IsInt64() const { return *typeTagPtr_ == INT64_TYPE_TAG; }
     int64 AsInt64() const;

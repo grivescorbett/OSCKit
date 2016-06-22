@@ -109,8 +109,25 @@ static inline int32 ToInt32( const char *p )
 #endif
 }
 
-
-static inline uint32 ToUInt32( const char *p )
+static inline uint16_t ToUInt16( const char *p )
+{
+#ifdef OSC_HOST_LITTLE_ENDIAN
+    union{
+        uint16_t i;
+        char c[2];
+    } u;
+    
+    u.c[0] = p[1];
+    u.c[1] = p[0];
+    
+    return u.i;
+#else
+    return *(uint16_t*)p;
+#endif
+}
+    
+    
+    static inline uint32 ToUInt32( const char *p )
 {
 #ifdef OSC_HOST_LITTLE_ENDIAN
     union{
@@ -334,18 +351,7 @@ uint32 ReceivedMessageArgument::AsMidiMessageUnchecked() const
     return ToUInt32( argumentPtr_ );
 }
     
-uint32 ReceivedMessageArgument::AsControlPointAddress() const {
-    if( !typeTagPtr_ )
-        throw MissingArgumentException();
-    else if( *typeTagPtr_ == CONTROL_POINT_ADDRESS_TYPE_TAG )
-        return AsControlPointAddressUnchecked();
-    else
-        throw WrongArgumentTypeException();
-}
-    
-uint32 ReceivedMessageArgument::AsControlPointAddressUnchecked() const {
-    return ToUInt32( argumentPtr_ );
-}
+
 
 int64 ReceivedMessageArgument::AsInt64() const
 {
@@ -515,7 +521,6 @@ void ReceivedMessageArgumentIterator::Advance()
             break;
 
         case INT32_TYPE_TAG:
-        case CONTROL_POINT_ADDRESS_TYPE_TAG:
         case FLOAT_TYPE_TAG:
         case CHAR_TYPE_TAG:
         case RGBA_COLOR_TYPE_TAG:
@@ -526,11 +531,16 @@ void ReceivedMessageArgumentIterator::Advance()
 
         case INT64_TYPE_TAG:
         case TIME_TAG_TYPE_TAG:
+        case POINT_TYPE_TAG:
         case DOUBLE_TYPE_TAG:
 				
             value_.argumentPtr_ += 8;
             break;
-
+            
+        case CONTROL_POINT_ADDRESS_TYPE_TAG:
+            value_.argumentPtr_ += 16;
+            break;
+            
         case STRING_TYPE_TAG: 
         case SYMBOL_TYPE_TAG:
 
@@ -666,7 +676,6 @@ void ReceivedMessage::Init( const char *message, osc_bundle_element_size_t size 
                         break;
 
                     case INT32_TYPE_TAG:
-                    case CONTROL_POINT_ADDRESS_TYPE_TAG:
                     case FLOAT_TYPE_TAG:
                     case CHAR_TYPE_TAG:
                     case RGBA_COLOR_TYPE_TAG:
@@ -681,6 +690,7 @@ void ReceivedMessage::Init( const char *message, osc_bundle_element_size_t size 
 
                     case INT64_TYPE_TAG:
                     case TIME_TAG_TYPE_TAG:
+                    case POINT_TYPE_TAG:
                     case DOUBLE_TYPE_TAG:
 
                         if( argument == end )
@@ -712,7 +722,13 @@ void ReceivedMessage::Init( const char *message, osc_bundle_element_size_t size 
                                 MalformedMessageException( "arguments exceed message size" );
                         }
                         break;
-                        
+                    case CONTROL_POINT_ADDRESS_TYPE_TAG:
+                        if( argument == end )
+                            throw MalformedMessageException( "arguments exceed message size" );
+                        argument += 16;
+                        if( argument > end )
+                            throw MalformedMessageException( "arguments exceed message size" );
+                        break;
                     default:
                         throw MalformedMessageException( "unknown type tag" );
                 }

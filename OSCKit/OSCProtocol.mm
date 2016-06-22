@@ -88,7 +88,29 @@
       [arguments addObject:@(arg->AsFloatUnchecked())];
     } else if (arg->IsString()) {
       [arguments addObject:[NSString stringWithUTF8String:arg->AsStringUnchecked()]];
+    } else if (arg->IsControlPointAddress()) {
+        const char* raw = arg->AsSymbolUnchecked();
+        
+        NSMutableArray* aVals = [NSMutableArray array];
+        
+        for (int i = 0; i < 8; i++) {
+            int16_t val = ntohs(*((int16_t*)(raw + 2*i)));
+            [aVals addObject:@(val)];
+        }
+        
+        [arguments addObject:aVals];
+    } else if (arg->IsPoint()) {
+        const char* raw = arg->AsSymbolUnchecked();
+        
+        uint32_t x_host = ntohl(*(const uint32_t *)raw);
+        uint32_t y_host = ntohl(*(const uint32_t *)(raw + 4));
+        
+        float x = *(float*)(&x_host);
+        float y = *(float*)(&y_host);
+        
+        [arguments addObject:[NSValue valueWithCGPoint:CGPointMake(x, y)]];
     } else {
+        NSLog(@"%@", arg->TypeTag());
       [[NSException exceptionWithName:@"OSCProtocolException"
                                reason:@"argument is not an int, float, or string"
                              userInfo:nil] raise];
