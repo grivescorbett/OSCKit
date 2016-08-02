@@ -109,6 +109,8 @@
         float y = *(float*)(&y_host);
         
         [arguments addObject:@[@(x), @(y)]];
+    } else if (arg->IsNil()) {
+        [arguments addObject:[NSNull null]];
     } else {
         NSLog(@"%@", arg->TypeTag());
       [[NSException exceptionWithName:@"OSCProtocolException"
