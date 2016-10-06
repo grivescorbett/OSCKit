@@ -111,8 +111,10 @@
         [arguments addObject:@[@(x), @(y)]];
     } else if (arg->IsNil()) {
         [arguments addObject:[NSNull null]];
+    } else if (arg->IsBool()) {
+        [arguments addObject:@(arg->AsBool())];
     } else {
-        NSLog(@"%@", arg->TypeTag());
+        NSLog(@"%c", arg->TypeTag());
       [[NSException exceptionWithName:@"OSCProtocolException"
                                reason:@"argument is not an int, float, or string"
                              userInfo:nil] raise];
