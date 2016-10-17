@@ -113,10 +113,14 @@
         [arguments addObject:[NSNull null]];
     } else if (arg->IsBool()) {
         [arguments addObject:@(arg->AsBool())];
+    } else if (arg->IsInt32()) {
+        [arguments addObject:@(arg->AsInt32Unchecked())];
+    } else if (arg->IsInt64()) {
+        [arguments addObject:@(arg->AsInt64Unchecked())];
     } else {
-        NSLog(@"%c", arg->TypeTag());
+//        NSLog(@"%c", arg->TypeTag());
       [[NSException exceptionWithName:@"OSCProtocolException"
-                               reason:@"argument is not an int, float, or string"
+                               reason:[NSString stringWithFormat:@"argument %c is unknown", arg->TypeTag()]
                              userInfo:nil] raise];
     }
   }
